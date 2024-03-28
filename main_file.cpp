@@ -83,7 +83,7 @@ void drawScene(GLFWwindow* window, float angle) {
 
 
 	spLambert->use();
-	glUniform4f(spLambert->u("color"), 0.385151, 0.151583, 1, 1);
+	glUniform4f(spLambert->u("color"), 0.38, 0.15, 1, 1);
 	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mt1));
@@ -94,6 +94,13 @@ void drawScene(GLFWwindow* window, float angle) {
 	Mt2 = glm::translate(Mt2, glm::vec3(1.05f, 0.0f, 0.0f));
 	Mt2 = glm::rotate(Mt2, -angle, glm::vec3(0.0f, 0.0f, 1.0f));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mt2));
+
+	Models::torus.drawSolid();
+
+	glm::mat4 Mt3 = glm::mat4(1.0f);
+	Mt3 = glm::rotate(Mt3, PI / 2, glm::vec3(1.0f, 0.0f, 0.0f));
+	Mt3 = glm::rotate(Mt3, angle, glm::vec3(0.0f, 0.0f, 1.0f));
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mt3));
 
 	Models::torus.drawSolid();
 
