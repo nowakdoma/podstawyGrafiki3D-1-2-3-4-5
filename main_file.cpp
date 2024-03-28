@@ -67,33 +67,18 @@ void freeOpenGLProgram(GLFWwindow* window) {
     //************Tutaj umieszczaj kod, który należy wykonać po zakończeniu pętli głównej************	
 }
 
-
-
-//Procedura rysująca zawartość sceny
-void drawScene(GLFWwindow* window, float angle) {
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+void drawTryb(GLFWwindow* window, float angle, glm::mat4 macierzModelu) {
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f);
 	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	glm::mat4 Mt1 = glm::mat4(1.0f);
-	Mt1 = glm::translate(Mt1, glm::vec3(-1.05f, 0.0f, 0.0f));
+	glm::mat4 Mt1 = macierzModelu;
 	Mt1 = glm::rotate(Mt1, angle, glm::vec3(0.0f, 0.0f, 1.0f));
 
-
 	spLambert->use();
-	glUniform4f(spLambert->u("color"), 0.38, 0.15, 1, 1);
+	glUniform4f(spLambert->u("color"), 0.385151, 0.151583, 1, 1);
 	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V));
 	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mt1));
-
-	Models::torus.drawSolid();
-
-	glm::mat4 Mt2 = glm::mat4(1.0f);
-	Mt2 = glm::translate(Mt2, glm::vec3(1.05f, 0.0f, 0.0f));
-	Mt2 = glm::rotate(Mt2, -angle, glm::vec3(0.0f, 0.0f, 1.0f));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mt2));
 
 	Models::torus.drawSolid();
 
@@ -105,15 +90,15 @@ void drawScene(GLFWwindow* window, float angle) {
 		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mk));
 		Models::cube.drawSolid();
 	}
+}
 
-	for (int i = 0; i < 12; i++) {
-		glm::mat4 Mk2 = Mt2;
-		Mk2 = glm::rotate(Mt2, (PI / 6 * i) + PI / 12, glm::vec3(0.0f, 0.0f, 1.0f));
-		Mk2 = glm::translate(Mk2, glm::vec3(1.0f, 0.0f, 0.0f));
-		Mk2 = glm::scale(Mk2, glm::vec3(0.1, 0.1, 0.1));
-		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mk2));
-		Models::cube.drawSolid();
-	}
+//Procedura rysująca zawartość sceny
+void drawScene(GLFWwindow* window, float angle) {
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	drawTryb(window, angle, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f, 1.5f, 1.5f)));
+	drawTryb(window, -angle, glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f)));
 
 	glfwSwapBuffers(window);
 }
