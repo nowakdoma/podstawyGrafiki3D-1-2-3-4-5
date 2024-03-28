@@ -32,7 +32,9 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "shaderprogram.h"
 
 
-float speed = PI;
+float speed = 0;
+
+static Models::Torus kolo(0.3, 0.1, 15, 15.83);
 
 
 void key_callback(GLFWwindow* window, int key,
@@ -57,7 +59,7 @@ void initOpenGLProgram(GLFWwindow* window) {
     initShaders();
 	glClearColor(0, 0, 0, 1);
 	glEnable(GL_DEPTH_TEST);
-	//glfwSetKeyCallback(window, key_callback); wyłączenie obsługi klawiatury
+	glfwSetKeyCallback(window, key_callback); // ponowne włączenie obsługi klawiatury
 }
 
 
@@ -67,53 +69,48 @@ void freeOpenGLProgram(GLFWwindow* window) {
     //************Tutaj umieszczaj kod, który należy wykonać po zakończeniu pętli głównej************	
 }
 
-void drawTryb(GLFWwindow* window, float angle, glm::mat4 macierzModelu) {
-	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f);
-	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-	glm::mat4 Mt1 = macierzModelu;
-	Mt1 = glm::rotate(Mt1, angle, glm::vec3(0.0f, 0.0f, 1.0f));
-
-	spLambert->use();
-	glUniform4f(spLambert->u("color"), 0.385151, 0.151583, 1, 1);
-	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P));
-	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mt1));
-
-	Models::torus.drawSolid();
-
-	for (int i = 0; i < 12; i++) {
-		glm::mat4 Mk = Mt1;
-		Mk = glm::rotate(Mt1, PI / 6 * i, glm::vec3(0.0f, 0.0f, 1.0f));
-		Mk = glm::translate(Mk, glm::vec3(1.0f, 0.0f, 0.0f));
-		Mk = glm::scale(Mk, glm::vec3(0.1, 0.1, 0.1));
-		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mk));
-		Models::cube.drawSolid();
-	}
-}
 
 //Procedura rysująca zawartość sceny
 void drawScene(GLFWwindow* window, float angle) {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	for (int i = 0; i < 6; i++) {
-		glm::mat4 M = glm::mat4(1.0f);
+	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f);
+	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 0.0f, -6.0f),
+		glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	spLambert->use();
+	glUniform4f(spLambert->u("color"), 0.385151, 0.151583, 1, 1);
+	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P));
+	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V));
 
-		M = glm::rotate(M, PI / 3, glm::vec3(1.0f, 0.0f, 0.0f));
-		M = glm::rotate(M, PI / 3 * i, glm::vec3(0.0f, 0.0f, 1.0f));
-		M = glm::translate(M, glm::vec3(0.95f, 0.0f, 0.0f));
-		M = glm::rotate(M, PI / 2, glm::vec3(0.0f, 1.0f, 0.0f));
-		M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
+	glm::mat4 Ms = glm::mat4(1.0f);
+	Ms = glm::rotate(Ms, angle, glm::vec3(0.0f, 1.0f, 0.0f));
 
-		if (i % 2) {
-			M = glm::rotate(M, PI / 12, glm::vec3(0.0f, 0.0f, 1.0f));
-			drawTryb(window, angle, M);
-		}
-		else
-			drawTryb(window, -angle, M);
+	glm::mat4 Mp = Ms;
+	Mp = glm::scale(Mp, glm::vec3(1.5f, 0.125f, 1.0f));
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mp));
+	Models::cube.drawSolid();
 
-	}
+
+	glm::mat4 Mk1 = Ms;
+	Mk1 = glm::translate(Mk1, glm::vec3(1.5f, 0.0f, 1.1f));
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mk1));
+	kolo.drawWire();
+
+	glm::mat4 Mk2 = Ms;
+	Mk2 = glm::translate(Mk2, glm::vec3(1.5f, 0.0f, -1.1f));
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mk2));
+	kolo.drawWire();
+
+	glm::mat4 Mk3 = Ms;
+	Mk3 = glm::translate(Mk3, glm::vec3(-1.5f, 0.0f, 1.1f));
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mk3));
+	kolo.drawWire();
+
+	glm::mat4 Mk4 = Ms;
+	Mk4 = glm::translate(Mk4, glm::vec3(-1.5f, 0.0f, -1.1f));
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mk4));
+	kolo.drawWire();
 
 	glfwSwapBuffers(window);
 }
