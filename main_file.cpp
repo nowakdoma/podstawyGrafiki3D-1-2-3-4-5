@@ -97,8 +97,21 @@ void drawScene(GLFWwindow* window, float angle) {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	drawTryb(window, angle, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f, 1.5f, 1.5f)));
-	drawTryb(window, -angle, glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f)));
+	for (int i = 0; i < 6; i++) {
+		glm::mat4 M = glm::mat4(1.0f);
+
+		M = glm::rotate(M, PI / 3 * i, glm::vec3(0.0f, 0.0f, 1.0f));
+		M = glm::translate(M, glm::vec3(1.05f, 0.0f, 0.0f));
+		M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
+
+		if (i % 2) {
+			M = glm::rotate(M, PI / 12, glm::vec3(0.0f, 0.0f, 1.0f));
+			drawTryb(window, angle, M);
+		}
+		else
+			drawTryb(window, -angle, M);
+
+	}
 
 	glfwSwapBuffers(window);
 }
