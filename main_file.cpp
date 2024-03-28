@@ -32,6 +32,8 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "shaderprogram.h"
 
 
+float speed = PI;
+
 //Procedura obsługi błędów
 void error_callback(int error, const char* description) {
 	fputs(description, stderr);
@@ -54,7 +56,7 @@ void freeOpenGLProgram(GLFWwindow* window) {
 
 
 //Procedura rysująca zawartość sceny
-void drawScene(GLFWwindow* window) {
+void drawScene(GLFWwindow* window, float angle) {
 
 	glClearColor(0.38, 0.15, 0.83, 0.58);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -63,6 +65,7 @@ void drawScene(GLFWwindow* window) {
 	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 M = glm::mat4(1.0f);
 
+	M = glm::rotate(M, angle, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	spConstant->use();
 	glUniformMatrix4fv(spConstant->u("P"), 1, false, glm::value_ptr(P));
@@ -106,10 +109,14 @@ int main(void)
 
 	initOpenGLProgram(window); //Operacje inicjujące
 
+	float angle = 0;
+
 	//Główna pętla	
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{		
-		drawScene(window); //Wykonaj procedurę rysującą
+		angle += speed * glfwGetTime();
+		glfwSetTime(0);
+		drawScene(window, angle); //Wykonaj procedurę rysującą
 		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.
 	}
 
