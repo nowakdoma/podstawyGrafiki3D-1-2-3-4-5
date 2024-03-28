@@ -58,7 +58,6 @@ void freeOpenGLProgram(GLFWwindow* window) {
 //Procedura rysująca zawartość sceny
 void drawScene(GLFWwindow* window, float angle) {
 
-	glClearColor(0.38, 0.15, 0.83, 0.58);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f);
@@ -67,13 +66,14 @@ void drawScene(GLFWwindow* window, float angle) {
 
 	M = glm::rotate(M, angle, glm::vec3(0.0f, 1.0f, 0.0f));
 
-	spConstant->use();
-	glUniformMatrix4fv(spConstant->u("P"), 1, false, glm::value_ptr(P));
-	glUniformMatrix4fv(spConstant->u("V"), 1, false, glm::value_ptr(V));
-	glUniformMatrix4fv(spConstant->u("M"), 1, false, glm::value_ptr(M));
+	spLambert->use();
+	glUniform4f(spLambert->u("color"), 0.38, 0.15, 1, 1);
+	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P));
+	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V));
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M));
 
+	Models::torus.drawSolid();
 
-	Models::teapot.drawWire();
 
 	glfwSwapBuffers(window);
 }
