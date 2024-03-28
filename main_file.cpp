@@ -32,7 +32,11 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "shaderprogram.h"
 
 
-float speed = 0;
+float speed = PI;
+
+Models::Sphere sun(0.5, 36, 36);
+Models::Sphere planet1(0.2, 36, 36);
+Models::Sphere moon1(0.1, 36, 36);
 
 void key_callback(GLFWwindow* window, int key,
 	int scancode, int action, int mods) {
@@ -56,7 +60,7 @@ void initOpenGLProgram(GLFWwindow* window) {
     initShaders();
 	glClearColor(0, 0, 0, 1);
 	glEnable(GL_DEPTH_TEST);
-	glfwSetKeyCallback(window, key_callback);
+	//glfwSetKeyCallback(window, key_callback); wyłączenie obsługi klawiatury
 }
 
 
@@ -75,18 +79,29 @@ void drawScene(GLFWwindow* window, float angle) {
 
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f);
 	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 M = glm::mat4(1.0f);
-
-	M = glm::rotate(M, angle, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	spLambert->use();
-	glUniform4f(spLambert->u("color"), 0.38, 0.15, 1, 1);
 	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M));
 
-	Models::torus.drawSolid();
 
+	glm::mat4 Ms = glm::mat4(1.0f);
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Ms));
+	glUniform4f(spLambert->u("color"), 1, 1, 0, 1);
+	sun.drawSolid();
+
+
+	glm::mat4 Mp1 = glm::rotate(Ms, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+	Mp1 = glm::translate(Mp1, glm::vec3(1.5f, 0.0f, 0.0f));
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mp1));
+	glUniform4f(spLambert->u("color"), 0, 1, 0, 1);
+	planet1.drawSolid();
+
+	glm::mat4 Mk1 = glm::rotate(Mp1, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+	Mk1 = glm::translate(Mk1, glm::vec3(0.5f, 0.0f, 0.0f));
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mk1));
+	glUniform4f(spLambert->u("color"), 0.5, 0.5, 0.5, 1);
+	moon1.drawSolid();
 
 	glfwSwapBuffers(window);
 }
