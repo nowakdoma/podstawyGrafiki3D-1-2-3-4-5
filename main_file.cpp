@@ -43,7 +43,8 @@ void error_callback(int error, const char* description) {
 //Procedura inicjująca
 void initOpenGLProgram(GLFWwindow* window) {
     initShaders();
-	//************Tutaj umieszczaj kod, który należy wykonać raz, na początku programu************	
+	glClearColor(0, 0, 0, 1);
+	glEnable(GL_DEPTH_TEST);
 }
 
 
