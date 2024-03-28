@@ -97,12 +97,23 @@ void drawScene(GLFWwindow* window, float angle) {
 
 	Models::torus.drawSolid();
 
-	glm::mat4 Mt3 = glm::mat4(1.0f);
-	Mt3 = glm::rotate(Mt3, PI / 2, glm::vec3(1.0f, 0.0f, 0.0f));
-	Mt3 = glm::rotate(Mt3, angle, glm::vec3(0.0f, 0.0f, 1.0f));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mt3));
+	for (int i = 0; i < 12; i++) {
+		glm::mat4 Mk = Mt1;
+		Mk = glm::rotate(Mt1, PI / 6 * i, glm::vec3(0.0f, 0.0f, 1.0f));
+		Mk = glm::translate(Mk, glm::vec3(1.0f, 0.0f, 0.0f));
+		Mk = glm::scale(Mk, glm::vec3(0.1, 0.1, 0.1));
+		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mk));
+		Models::cube.drawSolid();
+	}
 
-	Models::torus.drawSolid();
+	for (int i = 0; i < 12; i++) {
+		glm::mat4 Mk2 = Mt2;
+		Mk2 = glm::rotate(Mt2, (PI / 6 * i) + PI / 12, glm::vec3(0.0f, 0.0f, 1.0f));
+		Mk2 = glm::translate(Mk2, glm::vec3(1.0f, 0.0f, 0.0f));
+		Mk2 = glm::scale(Mk2, glm::vec3(0.1, 0.1, 0.1));
+		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mk2));
+		Models::cube.drawSolid();
+	}
 
 	glfwSwapBuffers(window);
 }
