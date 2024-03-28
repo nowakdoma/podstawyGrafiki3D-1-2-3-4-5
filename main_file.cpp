@@ -100,8 +100,10 @@ void drawScene(GLFWwindow* window, float angle) {
 	for (int i = 0; i < 6; i++) {
 		glm::mat4 M = glm::mat4(1.0f);
 
+		M = glm::rotate(M, PI / 3, glm::vec3(1.0f, 0.0f, 0.0f));
 		M = glm::rotate(M, PI / 3 * i, glm::vec3(0.0f, 0.0f, 1.0f));
-		M = glm::translate(M, glm::vec3(1.05f, 0.0f, 0.0f));
+		M = glm::translate(M, glm::vec3(0.95f, 0.0f, 0.0f));
+		M = glm::rotate(M, PI / 2, glm::vec3(0.0f, 1.0f, 0.0f));
 		M = glm::scale(M, glm::vec3(0.5f, 0.5f, 0.5f));
 
 		if (i % 2) {
