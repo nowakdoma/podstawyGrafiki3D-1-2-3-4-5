@@ -58,6 +58,20 @@ void drawScene(GLFWwindow* window) {
 
 	glClearColor(0.38, 0.15, 0.83, 0.58);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f);
+	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 M = glm::mat4(1.0f);
+
+
+	spConstant->use();
+	glUniformMatrix4fv(spConstant->u("P"), 1, false, glm::value_ptr(P));
+	glUniformMatrix4fv(spConstant->u("V"), 1, false, glm::value_ptr(V));
+	glUniformMatrix4fv(spConstant->u("M"), 1, false, glm::value_ptr(M));
+
+
+	Models::teapot.drawWire();
+
 	glfwSwapBuffers(window);
 }
 
