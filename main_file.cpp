@@ -55,8 +55,10 @@ void freeOpenGLProgram(GLFWwindow* window) {
 
 //Procedura rysująca zawartość sceny
 void drawScene(GLFWwindow* window) {
-	//************Tutaj umieszczaj kod rysujący obraz******************l
-	
+
+	glClearColor(0.38, 0.15, 0.83, 0.58);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glfwSwapBuffers(window);
 }
 
 
