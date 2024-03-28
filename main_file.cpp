@@ -32,7 +32,18 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 #include "shaderprogram.h"
 
 
-float speed = PI;
+float speed = 0;
+
+void key_callback(GLFWwindow* window, int key,
+	int scancode, int action, int mods) {
+	if (action == GLFW_PRESS) {
+		if (key == GLFW_KEY_LEFT) speed = -PI;
+		if (key == GLFW_KEY_RIGHT) speed = PI;
+	}
+	if (action == GLFW_RELEASE) {
+		speed = 0;
+	}
+}
 
 //Procedura obsługi błędów
 void error_callback(int error, const char* description) {
@@ -45,6 +56,7 @@ void initOpenGLProgram(GLFWwindow* window) {
     initShaders();
 	glClearColor(0, 0, 0, 1);
 	glEnable(GL_DEPTH_TEST);
+	glfwSetKeyCallback(window, key_callback);
 }
 
 
