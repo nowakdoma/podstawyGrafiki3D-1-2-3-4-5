@@ -34,11 +34,6 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 
 float speed = PI;
 
-Models::Sphere sun(0.5, 36, 36);
-Models::Sphere planet1(0.2, 36, 36);
-Models::Sphere moon1(0.1, 36, 36);
-Models::Sphere planet2(0.25, 36, 36);
-Models::Sphere moon2(0.07, 36, 36);
 
 void key_callback(GLFWwindow* window, int key,
 	int scancode, int action, int mods) {
@@ -82,40 +77,25 @@ void drawScene(GLFWwindow* window, float angle) {
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f);
 	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
+	glm::mat4 Mt1 = glm::mat4(1.0f);
+	Mt1 = glm::translate(Mt1, glm::vec3(-1.05f, 0.0f, 0.0f));
+	Mt1 = glm::rotate(Mt1, angle, glm::vec3(0.0f, 0.0f, 1.0f));
+
+
 	spLambert->use();
+	glUniform4f(spLambert->u("color"), 0.385151, 0.151583, 1, 1);
 	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V));
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mt1));
 
+	Models::torus.drawSolid();
 
-	glm::mat4 Ms = glm::mat4(1.0f);
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Ms));
-	glUniform4f(spLambert->u("color"), 1, 1, 0, 1);
-	sun.drawSolid();
+	glm::mat4 Mt2 = glm::mat4(1.0f);
+	Mt2 = glm::translate(Mt2, glm::vec3(1.05f, 0.0f, 0.0f));
+	Mt2 = glm::rotate(Mt2, -angle, glm::vec3(0.0f, 0.0f, 1.0f));
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mt2));
 
-
-	glm::mat4 Mp1 = glm::rotate(Ms, angle, glm::vec3(0.0f, 1.0f, 0.0f));
-	Mp1 = glm::translate(Mp1, glm::vec3(1.5f, 0.0f, 0.0f));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mp1));
-	glUniform4f(spLambert->u("color"), 0, 1, 0, 1);
-	planet1.drawSolid();
-
-	glm::mat4 Mk1 = glm::rotate(Mp1, angle, glm::vec3(0.0f, 1.0f, 0.0f));
-	Mk1 = glm::translate(Mk1, glm::vec3(0.5f, 0.0f, 0.0f));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mk1));
-	glUniform4f(spLambert->u("color"), 0.5, 0.5, 0.5, 1);
-	moon1.drawSolid();
-
-	glm::mat4 Mp2 = glm::rotate(Ms, angle, glm::vec3(0.0f, 0.0f, 1.0f));
-	Mp2 = glm::translate(Mp2, glm::vec3(2.0f, 0.0f, 0.0f));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mp2));
-	glUniform4f(spLambert->u("color"), 0.9, 1, 1, 1);
-	planet2.drawSolid();
-
-	glm::mat4 Mk2 = glm::rotate(Mp2, angle, glm::vec3(1.0f, 0.0f, 0.0f));
-	Mk2 = glm::translate(Mk2, glm::vec3(0.0f, 0.0f, 0.3f));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mk2));
-	glUniform4f(spLambert->u("color"), 0.5, 0.5, 0.5, 1);
-	moon2.drawSolid();
+	Models::torus.drawSolid();
 
 	glfwSwapBuffers(window);
 }
