@@ -33,7 +33,7 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 
 
 float speed = 0;
-int liczbaSegmentow = 2;
+int liczbaSegmentow = 3;
 
 void key_callback(GLFWwindow* window, int key,
 	int scancode, int action, int mods) {
