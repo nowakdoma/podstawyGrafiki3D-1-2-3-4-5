@@ -39,8 +39,8 @@ void key_callback(GLFWwindow* window, int key,
 	int scancode, int action, int mods) {
 
 	if (action == GLFW_PRESS) {
-		if (key == GLFW_KEY_DOWN == 0) speed = PI;
-		if (key == GLFW_KEY_UP == 0) speed = -PI;
+		if (key == GLFW_KEY_DOWN) speed = -PI;
+		if (key == GLFW_KEY_UP) speed = PI;
 	}
 
 	if (action == GLFW_RELEASE) {
@@ -114,7 +114,22 @@ void drawScene(GLFWwindow* window, float angle) {
 
 	glm::mat4 M = glm::mat4(1.0f);
 
-	drawFinger(window, M , angle);
+	drawCube(window, M, glm::vec3(0.5f, 0.25f, 0.5f));
+
+	glm::mat4 M1 = glm::translate(M, glm::vec3(0.5f, 0.0f, 0.0f));
+	drawFinger(window, M1 , angle);
+
+	glm::mat4 M2 = glm::rotate(M, PI/2, glm::vec3(0.0f, 1.0f, 0.0f));
+	M2 = glm::translate(M2, glm::vec3(0.5f, 0.0f, 0.0f));
+	drawFinger(window, M2, angle);
+
+	glm::mat4 M3 = glm::rotate(M, PI, glm::vec3(0.0f, 1.0f, 0.0f));
+	M3 = glm::translate(M3, glm::vec3(0.5f, 0.0f, 0.0f));
+	drawFinger(window, M3, angle);
+
+	glm::mat4 M4 = glm::rotate(M, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	M4 = glm::translate(M4, glm::vec3(0.5f, 0.0f, 0.0f));
+	drawFinger(window, M4, angle);
 
 	glfwSwapBuffers(window);
 }
