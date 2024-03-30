@@ -33,28 +33,50 @@ Place, Fifth Floor, Boston, MA  02110 - 1301  USA
 
 
 float speed = 0;
-float turn = 0;
-
-static Models::Torus kolo(0.3, 0.1, 15, 15.83);
-
+int liczbaSegmentow = 2;
 
 void key_callback(GLFWwindow* window, int key,
 	int scancode, int action, int mods) {
 
 	if (action == GLFW_PRESS) {
-		if (key == GLFW_KEY_LEFT) speed = PI;
-		if (key == GLFW_KEY_RIGHT) speed = -PI;
-		if (key == GLFW_KEY_D) turn = -PI / 4;
-		if (key == GLFW_KEY_A) turn = PI / 4;
-
+		if (key == GLFW_KEY_DOWN == 0) speed = PI;
+		if (key == GLFW_KEY_UP == 0) speed = -PI;
 	}
 
 	if (action == GLFW_RELEASE) {
 		speed = 0;
-		if (key == GLFW_KEY_D || key == GLFW_KEY_A) turn = 0;
+	}
+}
+
+
+void drawCube(GLFWwindow* window, glm::mat4 M, glm::vec3 scale) {
+
+	M = glm::scale(M, scale);
+	glUniform4f(spLambert->u("color"), 0.38, 0.15, 1, 1);
+	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(M));  //Załadowanie macierzy modelu do programu cieniującego
+	Models::cube.drawSolid(); //Narysowanie obiektu
+}
+
+void drawFinger(GLFWwindow* window, glm::mat4 M, float angle) {
+
+	glm::vec3 fingerSize = glm::vec3(1.0f, 0.25f, 0.5f);
+
+		M = glm::rotate(M, angle, glm::vec3(0.0f, 0.0f, 1.0f));
+		M = glm::translate(M, glm::vec3(1.0f, 0.0f, 0.0f));
+
+	drawCube(window, M, fingerSize);
+
+	for (int i = 1; i < liczbaSegmentow; i++) {
+
+		M = glm::translate(M, glm::vec3(1.0f, 0.0f, 0.0f));
+		M = glm::rotate(M, angle, glm::vec3(0.0f, 0.0f, 1.0f));
+		M = glm::translate(M, glm::vec3(1.0f, 0.0f, 0.0f));
+
+		drawCube(window, M, fingerSize);
 	}
 
 }
+
 
 //Procedura obsługi błędów
 void error_callback(int error, const char* description) {
@@ -79,52 +101,20 @@ void freeOpenGLProgram(GLFWwindow* window) {
 
 
 //Procedura rysująca zawartość sceny
-void drawScene(GLFWwindow* window, float angle, float wheelAngle) {
+void drawScene(GLFWwindow* window, float angle) {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f);
-	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 0.0f, -6.0f),
-		glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 2.0f, -20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); 
+
 	spLambert->use();
-	glUniform4f(spLambert->u("color"), 0.385151, 0.151583, 1, 1);
-	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P));
-	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V));
+	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P)); 
+	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V)); 
 
-	glm::mat4 Ms = glm::mat4(1.0f);
-	Ms = glm::rotate(Ms, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 M = glm::mat4(1.0f);
 
-	glm::mat4 Mp = Ms;
-	Mp = glm::scale(Mp, glm::vec3(1.5f, 0.125f, 1.0f));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mp));
-	Models::cube.drawSolid();
-
-
-	glm::mat4 Mk1 = Ms;
-	Mk1 = glm::translate(Mk1, glm::vec3(1.5f, 0.0f, 1.1f));
-	Mk1 = glm::rotate(Mk1, turn, glm::vec3(0.0f, 1.0f, 0.0f));
-	Mk1 = glm::rotate(Mk1, wheelAngle, glm::vec3(0.0f, 0.0f, 1.0f));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mk1));
-	kolo.drawWire();
-
-	glm::mat4 Mk2 = Ms;
-	Mk2 = glm::translate(Mk2, glm::vec3(1.5f, 0.0f, -1.1f));
-	Mk2 = glm::rotate(Mk2, turn, glm::vec3(0.0f, 1.0f, 0.0f));
-	Mk2 = glm::rotate(Mk2, wheelAngle, glm::vec3(0.0f, 0.0f, 1.0f));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mk2));
-	kolo.drawWire();
-
-	glm::mat4 Mk3 = Ms;
-	Mk3 = glm::translate(Mk3, glm::vec3(-1.5f, 0.0f, 1.1f));
-	Mk3 = glm::rotate(Mk3, wheelAngle, glm::vec3(0.0f, 0.0f, 1.0f));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mk3));
-	kolo.drawWire();
-
-	glm::mat4 Mk4 = Ms;
-	Mk4 = glm::translate(Mk4, glm::vec3(-1.5f, 0.0f, -1.1f));
-	Mk4 = glm::rotate(Mk4, wheelAngle, glm::vec3(0.0f, 0.0f, 1.0f));
-	glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mk4));
-	kolo.drawWire();
+	drawFinger(window, M , angle);
 
 	glfwSwapBuffers(window);
 }
@@ -161,15 +151,15 @@ int main(void)
 	initOpenGLProgram(window); //Operacje inicjujące
 
 	float angle = 0;
-	float wheelAngle = 0;
 
 	//Główna pętla	
 	while (!glfwWindowShouldClose(window)) //Tak długo jak okno nie powinno zostać zamknięte
 	{		
 		angle += speed * glfwGetTime();
-		wheelAngle += -PI * glfwGetTime();
+		if (angle > 0) angle = 0; //ograniczenie kątów zginania 
+		if (angle < -PI/(liczbaSegmentow + 1)) angle = -PI/(liczbaSegmentow + 1); 
 		glfwSetTime(0);
-		drawScene(window, angle, wheelAngle); //Wykonaj procedurę rysującą
+		drawScene(window, angle); //Wykonaj procedurę rysującą
 		glfwPollEvents(); //Wykonaj procedury callback w zalezności od zdarzeń jakie zaszły.
 	}
 
